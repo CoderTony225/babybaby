@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title th:text="${editMode} ? '编辑无人机' : '新建无人机'">表单</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/4.6.0/css/bootstrap.min.css}"/>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" th:href="@{/uavs}">无人机台账</a>
+        <div class="navbar-nav ml-auto">
+            <a class="nav-link" th:href="@{/logout}">退出</a>
+        </div>
+    </div>
+</nav>
+<div class="container mt-4">
+    <h2 th:text="${editMode} ? '编辑无人机' : '新建无人机'" class="mb-4">表单</h2>
+    <div class="alert alert-danger" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+    <form method="post" th:object="${uavForm}"
+          th:attr="action=${editMode} ? @{/uavs/{id}(id=${uavForm.id})} : @{/uavs}">
+        <!-- 基本信息 -->
+        <div class="card mb-4">
+            <div class="card-header">基本信息</div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group" th:classappend="${#fields.hasErrors('frameSn')} ? 'has-error'">
+                            <label for="frameSn">机身编号 <span class="text-danger">*</span></label>
+                            <input id="frameSn" class="form-control" th:field="*{frameSn}" required="required"/>
+                            <span class="text-danger" th:if="${#fields.hasErrors('frameSn')}" th:errors="*{frameSn}"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group" th:classappend="${#fields.hasErrors('modelName')} ? 'has-error'">
+                            <label for="modelName">型号 <span class="text-danger">*</span></label>
+                            <input id="modelName" class="form-control" th:field="*{modelName}" required="required"/>
+                            <span class="text-danger" th:if="${#fields.hasErrors('modelName')}" th:errors="*{modelName}"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="manufacturer">制造厂商</label>
+                            <input id="manufacturer" class="form-control" th:field="*{manufacturer}"/>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="status">状态</label>
+                            <select id="status" class="form-control" th:field="*{status}">
+                                <option value="">请选择状态</option>
+                                <option value="IDLE">空闲</option>
+                                <option value="FLYING">飞行中</option>
+                                <option value="CHARGING">充电中</option>
+                                <option value="FAULT">故障</option>
+                                <option value="MAINTENANCE">维修中</option>
+                                <option value="SCRAPPED">报废</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 硬件参数 -->
+        <div class="card mb-4">
+            <div class="card-header">硬件参数</div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="maxFlightAltitude">最大飞行高度（米）</label>
+                            <input id="maxFlightAltitude" type="number" class="form-control" th:field="*{maxFlightAltitude}"/>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="maxFlightSpeed">最大飞行速度（km/h）</label>
+                            <input id="maxFlightSpeed" type="number" class="form-control" th:field="*{maxFlightSpeed}"/>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="flightDuration">续航时间（分钟）</label>
+                            <input id="flightDuration" type="number" class="form-control" th:field="*{flightDuration}"/>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="batteryCapacity">电池容量（mAh）</label>
+                            <input id="batteryCapacity" type="number" class="form-control" th:field="*{batteryCapacity}"/>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="payloadCapacity">载重能力（克）</label>
+                            <input id="payloadCapacity" type="number" class="form-control" th:field="*{payloadCapacity}"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 备注 -->
+        <div class="form-group" th:classappend="${#fields.hasErrors('notes')} ? 'has-error'">
+            <label for="notes">备注</label>
+            <textarea id="notes" class="form-control" rows="3" th:field="*{notes}"></textarea>
+            <span class="text-danger" th:if="${#fields.hasErrors('notes')}" th:errors="*{notes}"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">保存</button>
+        <a class="btn btn-secondary ml-2" th:href="@{/uavs}">取消</a>
+    </form>
+</div>
+<script th:src="@{/webjars/jquery/3.6.4/jquery.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/4.6.0/js/bootstrap.min.js}"></script>
+</body>
+</html>

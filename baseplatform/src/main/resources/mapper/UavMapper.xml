@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.md.basePlatform.repository.mapper.UavMapper">
+
+    <sql id="Base_Column_List">
+        id, frame_sn, model_name, manufacturer, status,
+        max_flight_altitude, max_flight_speed, flight_duration, battery_capacity, payload_capacity,
+        notes, ai_attributes, ai_generation_status, ai_last_error,
+        created_at, updated_at
+    </sql>
+    <!-- 关键字查询 -->
+    <sql id="Keyword_Filter">
+        <if test="keyword != null and keyword != ''">
+            (
+            <choose>
+                <when test="_databaseId == 'mysql'">
+                    LOWER(frame_sn) LIKE LOWER(CONCAT('%', #{keyword}, '%'))
+                    OR LOWER(model_name) LIKE LOWER(CONCAT('%', #{keyword}, '%'))
+                    OR (manufacturer IS NOT NULL AND LOWER(manufacturer) LIKE LOWER(CONCAT('%', #{keyword}, '%')))
+                    OR (notes IS NOT NULL AND LOWER(notes) LIKE LOWER(CONCAT('%', #{keyword}, '%')))
+                </when>
+                <otherwise>
+                    LOWER(frame_sn) LIKE LOWER('%' || #{keyword} || '%')
+                    OR LOWER(model_name) LIKE LOWER('%' || #{keyword} || '%')
+                    OR (manufacturer IS NOT NULL AND LOWER(manufacturer) LIKE LOWER('%' || #{keyword} || '%'))
+                    OR (notes IS NOT NULL AND LOWER(notes) LIKE LOWER('%' || #{keyword} || '%'))
+                </otherwise>
+            </choose>
+            )
+        </if>
+    </sql>
+    <!-- id查询 -->
+    <select id="selectById" resultType="Uav">
+        SELECT <include refid="Base_Column_List"/> FROM uav WHERE id = #{id}
+    </select>
+    <!-- 编号查询 -->
+    <select id="selectByFrameSn" resultType="Uav">
+        SELECT <include refid="Base_Column_List"/> FROM uav WHERE frame_sn = #{frameSn}
+    </select>
+    <!-- 分页查询 -->
+    <select id="countByKeyword" resultType="int">
+        SELECT COUNT(1) FROM uav
+        <where>
+            <include refid="Keyword_Filter"/>
+        </where>
+    </select>
+    <!-- 分页查询列表 -->
+    <select id="selectPage" resultType="Uav">
+        SELECT <include refid="Base_Column_List"/> FROM uav
+        <where>
+            <include refid="Keyword_Filter"/>
+        </where>
+        ORDER BY id DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+    <!-- 插入 -->
+    <insert id="insert" parameterType="Uav" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO uav (
+            frame_sn, model_name, manufacturer, status,
+            max_flight_altitude, max_flight_speed, flight_duration, battery_capacity, payload_capacity,
+            notes, ai_attributes, ai_generation_status, ai_last_error,
+            created_at, updated_at
+        ) VALUES (
+            #{frameSn}, #{modelName}, #{manufacturer}, #{status},
+            #{maxFlightAltitude}, #{maxFlightSpeed}, #{flightDuration}, #{batteryCapacity}, #{payloadCapacity},
+            #{notes}, #{aiAttributes}, #{aiGenerationStatus}, #{aiLastError},
+            #{createdAt}, #{updatedAt}
+        )
+    </insert>
+    <!-- 更新 -->
+    <update id="update" parameterType="Uav">
+        UPDATE uav SET
+            frame_sn = #{frameSn},
+            model_name = #{modelName},
+            manufacturer = #{manufacturer},
+            status = #{status},
+            max_flight_altitude = #{maxFlightAltitude},
+            max_flight_speed = #{maxFlightSpeed},
+            flight_duration = #{flightDuration},
+            battery_capacity = #{batteryCapacity},
+            payload_capacity = #{payloadCapacity},
+            notes = #{notes},
+            ai_attributes = #{aiAttributes},
+            ai_generation_status = #{aiGenerationStatus},
+            ai_last_error = #{aiLastError},
+            updated_at = #{updatedAt}
+        WHERE id = #{id}
+    </update>
+    <!-- 删除 -->
+    <delete id="deleteById">
+        DELETE FROM uav WHERE id = #{id}
+    </delete>
+
+</mapper>

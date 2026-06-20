@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>无人机详情</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/4.6.0/css/bootstrap.min.css}"/>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" th:href="@{/uavs}">无人机台账</a>
+        <div class="navbar-nav ml-auto">
+            <a class="nav-link" th:href="@{/logout}">退出</a>
+        </div>
+    </div>
+</nav>
+<div class="container mt-4">
+    <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
+    <h2 class="mb-4">无人机详情</h2>
+
+    <div th:if="${uav}" class="mb-4">
+        <!-- 基本信息 -->
+        <div class="card mb-4">
+            <div class="card-header">基本信息</div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">ID</dt>
+                    <dd class="col-sm-9" th:text="${uav.id}">1</dd>
+                    <dt class="col-sm-3">机身编号</dt>
+                    <dd class="col-sm-9" th:text="${uav.frameSn}">SN</dd>
+                    <dt class="col-sm-3">型号</dt>
+                    <dd class="col-sm-9" th:text="${uav.modelName}">Model</dd>
+                    <dt class="col-sm-3">制造厂商</dt>
+                    <dd class="col-sm-9" th:text="${uav.manufacturer} ?: '—'">—</dd>
+                    <dt class="col-sm-3">状态</dt>
+                    <dd class="col-sm-9">
+                        <span th:if="${uav.status == 'IDLE'}" class="badge badge-success">空闲</span>
+                        <span th:if="${uav.status == 'FLYING'}" class="badge badge-primary">飞行中</span>
+                        <span th:if="${uav.status == 'CHARGING'}" class="badge badge-info">充电中</span>
+                        <span th:if="${uav.status == 'FAULT'}" class="badge badge-danger">故障</span>
+                        <span th:if="${uav.status == 'MAINTENANCE'}" class="badge badge-warning">维修中</span>
+                        <span th:if="${uav.status == 'SCRAPPED'}" class="badge badge-secondary">报废</span>
+                        <span th:if="${uav.status == null}" class="badge badge-secondary">未知</span>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+
+        <!-- 硬件参数 -->
+        <div class="card mb-4">
+            <div class="card-header">硬件参数</div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">最大飞行高度</dt>
+                    <dd class="col-sm-9" th:text="${uav.maxFlightAltitude != null ? uav.maxFlightAltitude + ' 米' : '—'}">—</dd>
+                    <dt class="col-sm-3">最大飞行速度</dt>
+                    <dd class="col-sm-9" th:text="${uav.maxFlightSpeed != null ? uav.maxFlightSpeed + ' km/h' : '—'}">—</dd>
+                    <dt class="col-sm-3">续航时间</dt>
+                    <dd class="col-sm-9" th:text="${uav.flightDuration != null ? uav.flightDuration + ' 分钟' : '—'}">—</dd>
+                    <dt class="col-sm-3">电池容量</dt>
+                    <dd class="col-sm-9" th:text="${uav.batteryCapacity != null ? uav.batteryCapacity + ' mAh' : '—'}">—</dd>
+                    <dt class="col-sm-3">载重能力</dt>
+                    <dd class="col-sm-9" th:text="${uav.payloadCapacity != null ? uav.payloadCapacity + ' 克' : '—'}">—</dd>
+                </dl>
+            </div>
+        </div>
+
+        <!-- 其他信息 -->
+        <div class="card mb-4">
+            <div class="card-header">其他信息</div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">备注</dt>
+                    <dd class="col-sm-9" th:text="${uav.notes} ?: '—'">—</dd>
+                    <dt class="col-sm-3">创建时间</dt>
+                    <dd class="col-sm-9" th:text="${uav.createdAt} ?: '—'">—</dd>
+                    <dt class="col-sm-3">更新时间</dt>
+                    <dd class="col-sm-9" th:text="${uav.updatedAt} ?: '—'">—</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <a class="btn btn-secondary" th:href="@{/uavs}">返回列表</a>
+    <a class="btn btn-warning ml-2" th:if="${uav}" th:href="@{/uavs/{id}/edit(id=${uav.id})}">编辑</a>
+</div>
+<script th:src="@{/webjars/jquery/3.6.4/jquery.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/4.6.0/js/bootstrap.min.js}"></script>
+</body>
+</html>

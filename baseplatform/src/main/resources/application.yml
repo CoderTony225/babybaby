@@ -1,0 +1,83 @@
+# ============================================
+# 应用基础配置
+# ============================================
+spring:
+  # 应用名称
+  application:
+    name: basePlatform
+  # 激活的配置文件（sqlite 或 mysql）
+  profiles:
+    active: sqlite
+  # Thymeleaf 模板配置
+  thymeleaf:
+    cache: false          # 开发环境禁用缓存
+    encoding: UTF-8       # 编码格式
+  # HTTP 请求响应编码配置
+  http:
+    encoding:
+      enabled: true       # 启用编码
+      charset: UTF-8      # 字符集
+      force: true         # 强制使用指定编码
+
+# ============================================
+# 服务器配置
+# ============================================
+server:
+  tomcat:
+    uri-encoding: UTF-8   # Tomcat URI 编码
+
+# ============================================
+# MyBatis 配置
+# ============================================
+mybatis:
+  mapper-locations: classpath:mapper/**/*.xml          # Mapper XML 文件位置
+  type-aliases-package: com.md.basePlatform.domain     # 实体类别名包路径
+  type-handlers-package: com.md.basePlatform.repository.typehandler  # 类型处理器包路径
+  configuration:
+    map-underscore-to-camel-case: true                 # 开启下划线转驼峰命名
+
+# ============================================
+# SQLite 数据库配置（默认激活）
+# ============================================
+---
+spring:
+  profiles: sqlite
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource       # 使用 Druid 连接池
+    driver-class-name: org.sqlite.JDBC                  # SQLite JDBC 驱动
+    url: jdbc:sqlite:${app.sqlite.path:${user.dir}/data/uav.db}  # 数据库文件路径
+    initialization-mode: always                         # 始终初始化
+    schema: classpath:schema.sql                        # 初始化 SQL 文件
+    druid:
+      initial-size: 1       # 初始连接数
+      min-idle: 1           # 最小空闲连接数
+      max-active: 8         # 最大活跃连接数
+      test-while-idle: false # 空闲时不测试连接
+      validation-query: SELECT 1  # 连接验证 SQL
+
+# SQLite 数据库路径配置
+app:
+  sqlite:
+    path: ${user.dir}/data/uav.db  # 数据库文件存放路径
+
+# ============================================
+# MySQL 数据库配置
+# 切换方式: spring.profiles.active=mysql
+# 环境变量: MYSQL_HOST, MYSQL_PORT, MYSQL_DATABASE, MYSQL_USERNAME, MYSQL_PASSWORD
+# ============================================
+---
+spring:
+  profiles: mysql
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource       # 使用 Druid 连接池
+    driver-class-name: com.mysql.cj.jdbc.Driver         # MySQL JDBC 驱动
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:uav}?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
+    username: ${MYSQL_USERNAME:root}                   # 数据库用户名（默认 root）
+    password: ${MYSQL_PASSWORD:}                       # 数据库密码（默认空）
+    initialization-mode: never                          # 不自动初始化（MySQL需手动建库）
+    druid:
+      initial-size: 2        # 初始连接数
+      min-idle: 2            # 最小空闲连接数
+      max-active: 32         # 最大活跃连接数
+      test-while-idle: false # 空闲时不测试连接
+      validation-query: SELECT 1  # 连接验证 SQL

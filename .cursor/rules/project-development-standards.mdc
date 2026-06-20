@@ -1,0 +1,191 @@
+---
+description: 无人机信息管理系统开发规范与行为准则
+alwaysApply: true
+---
+
+# 无人机信息管理系统开发规范
+
+## 技术栈规范
+
+### 系统环境
+- Java EE 8
+- Servlet 3.0
+- Apache Maven 3
+
+### 主框架
+- Spring Boot 2.2.x
+- Spring Framework 5.2.x
+- Apache Shiro 1.7
+
+### 持久层
+- Apache MyBatis 3.5.x
+- Hibernate Validation 6.0.x
+- Alibaba Druid 1.2.x
+
+### 视图层
+- Bootstrap 4
+- Vue 3
+
+## 数据库规范
+
+### 数据库支持
+- 支持 SQLite 和 MySQL 数据库
+- 通过 Spring Profile 实现自由切换
+- 初期版本使用 SQLite，生产环境切换 MySQL
+
+### 数据源配置
+- 使用 Druid 连接池
+- SQLite: `spring.profiles.active=sqlite`
+- MySQL: `spring.profiles.active=mysql`
+
+## 架构设计规范
+
+### 四层架构
+- Controller 层：处理 HTTP 请求
+- Service 层：业务逻辑处理
+- Repository 层：数据访问
+- Domain 层：实体与 DTO
+
+### Service 层设计
+- 接口与实现必须分离
+- 接口放在 `service` 包
+- 实现类放在 `service.impl` 包
+- 使用 `@Service` 注解标记实现类
+- 使用 `@Transactional` 管理事务
+
+### Repository 层设计
+- Mapper 接口放在 `repository.mapper` 包
+- XML 映射文件放在 `resources/mapper` 目录
+- 使用 `@Param` 注解标记参数
+
+### 拦截器设计
+- 拦截器统一放在 `interceptor` 包
+- 使用 `@Component` 标记拦截器
+- 拦截器必须打印请求信息（方法、URI、参数等）
+
+## 业务功能规范
+
+### 无人机信息管理
+- 录入：创建新的无人机记录
+- 查询：支持关键字搜索和分页
+- 删除：删除指定无人机记录
+- 修改：更新无人机信息
+- AI 属性：无人机属性由 AI 自动生成
+
+### AI 属性生成
+- 使用 `UavAttributeAiClient` 接口
+- 异步生成，不阻塞主流程
+- 记录生成状态和错误信息
+- 支持重试机制
+
+## 前端开发规范
+
+### Bootstrap 4
+- 使用 Bootstrap 4 组件库
+- 响应式设计
+- 统一的 UI 风格
+
+### Vue 3
+- 使用 Vue 3 Composition API
+- 组件化开发
+- 状态管理使用 Vuex
+- 路由使用 Vue Router
+
+### 模板引擎
+- 使用 Thymeleaf 作为服务端渲染
+- 与 Vue 3 结合使用
+- 遵循 Thymeleaf 最佳实践
+
+## 代码质量规范
+
+### 测试覆盖率
+- 单元测试覆盖率不低于 80%
+- Service 层必须编写单元测试
+- Controller 层使用 `@WebMvcTest`
+- Repository 层使用 `@DataJpaTest`
+
+### 代码规范
+- 遵循 Java 代码规范
+- 使用 Lombok 减少样板代码
+- 方法必须添加 Javadoc 注释
+- 异常处理必须明确
+
+### 日志规范
+- 使用 SLF4J + Logback
+- 拦截器必须记录请求日志
+- 关键业务操作必须记录日志
+- 日志级别使用规范（DEBUG/INFO/WARN/ERROR）
+
+## 安全规范
+
+### 认证授权
+- 使用 Apache Shiro 进行认证授权
+- 实现登录/登出功能
+- 敏感操作需要认证
+
+### 数据验证
+- 使用 Hibernate Validation 进行参数验证
+- 前端和后端双重验证
+- 敏感数据加密存储
+
+## 部署规范
+
+### 构建工具
+- 使用 Maven 进行构建
+- 使用 Maven Wrapper 确保版本一致性
+- 构建命令：`./mvnw clean package`
+
+### 运行方式
+- 开发环境：`./mvnw spring-boot:run`
+- 生产环境：`java -jar target/basePlatform-0.0.1-SNAPSHOT.jar`
+
+### 配置管理
+- 使用 Spring Profile 管理环境配置
+- 敏感信息使用环境变量
+- 配置文件版本控制
+
+## 文档规范
+
+### API 文档
+- 使用 Swagger/OpenAPI 规范
+- 接口变更必须同步更新文档
+- 文档位置：`harness-collab/04-api-docs/`
+
+### 代码注释
+- 所有 public 方法必须添加 Javadoc
+- 复杂逻辑必须添加行内注释
+- 注释使用中文
+
+## 开发流程规范
+
+### 需求确认
+- 业务代码前确认需求文档存在
+- 架构代码前确认设计文档存在
+- 文档缺失时拒绝生成代码
+
+### 代码提交
+- 提交前必须运行测试
+- 提交信息清晰描述变更内容
+- 遵循 Git Flow 工作流
+
+### 代码审查
+- 代码必须经过审查
+- 审查关注点：功能正确性、代码质量、安全性
+- 审查通过后方可合并
+
+## 性能优化规范
+
+### 数据库优化
+- 使用索引优化查询
+- 避免 N+1 查询问题
+- 合理使用缓存
+
+### 前端优化
+- 资源压缩与合并
+- 使用 CDN 加速
+- 懒加载与按需加载
+
+### 后端优化
+- 异步处理耗时操作
+- 使用连接池管理数据库连接
+- 合理设置超时时间
