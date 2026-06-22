@@ -1,0 +1,14 @@
+# 服务日志
+server.log
+
+# Maven
+target/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db

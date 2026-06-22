@@ -1,7 +1,7 @@
 @echo off
 chcp 65001 >nul
 echo ========================================
-echo   无人机管理系统 - 后端启动脚本
+echo   无人机管理系统 - 启动脚本
 echo ========================================
 echo.
 
@@ -17,9 +17,11 @@ if exist "target" (
 )
 echo.
 
-echo [2] 启动 Spring Boot 后端...
+echo [2] 启动 Spring Boot 应用...
 echo     端口：8080
 echo     数据库：SQLite (data/uav.db)
+echo     访问：http://localhost:8080
+echo     登录：admin / admin123
 echo.
 
 call mvnw.cmd clean spring-boot:run

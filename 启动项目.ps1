@@ -13,68 +13,33 @@ $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";"
 Write-Host "[检查] 验证环境..." -ForegroundColor Yellow
 $javaVersion = java -version 2>&1 | Select-String "version"
 Write-Host "  Java: $javaVersion" -ForegroundColor Green
-
-$nodeVersion = node --version
-Write-Host "  Node.js: $nodeVersion" -ForegroundColor Green
 Write-Host ""
 
 # 启动后端
-Write-Host "[1/2] 启动后端..." -ForegroundColor Yellow
+Write-Host "[启动] 启动 Spring Boot 后端..." -ForegroundColor Yellow
 $backendPath = Join-Path $PSScriptRoot "baseplatform"
 Write-Host "  路径：$backendPath" -ForegroundColor Gray
 
-# 清理 target 目录
+# 清理 target
 if (Test-Path "$backendPath\target") {
     Write-Host "  清理旧编译文件..." -ForegroundColor Gray
     Remove-Item -Recurse -Force "$backendPath\target" -ErrorAction SilentlyContinue
 }
 
 # 启动后端进程
-$backendJob = Start-Process powershell -ArgumentList "-NoExit", "-Command", @"
+Start-Process powershell -ArgumentList "-NoExit", "-Command", @"
 cd '$backendPath'; 
 `$env:Path = [System.Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path','User'); 
 Write-Host '正在启动 Spring Boot...' -ForegroundColor Yellow; 
 .\mvnw.cmd clean spring-boot:run
-"@ -PassThru -WindowStyle Normal
+"@ -WindowStyle Normal
 
 Write-Host "  后端启动中... (端口 8080)" -ForegroundColor Green
-Start-Sleep -Seconds 3
-Write-Host ""
-
-# 启动前端
-Write-Host "[2/2] 启动前端..." -ForegroundColor Yellow
-$frontendPath = Join-Path $PSScriptRoot "frontend"
-Write-Host "  路径：$frontendPath" -ForegroundColor Gray
-
-# 清理 vite 缓存
-if (Test-Path "$frontendPath\node_modules\.vite") {
-    Write-Host "  清理 Vite 缓存..." -ForegroundColor Gray
-    Remove-Item -Recurse -Force "$frontendPath\node_modules\.vite" -ErrorAction SilentlyContinue
-}
-
-# 启动前端进程
-$frontendJob = Start-Process powershell -ArgumentList "-NoExit", "-Command", @"
-cd '$frontendPath'; 
-`$env:Path = [System.Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path','User'); 
-Write-Host '正在启动 Vite...' -ForegroundColor Yellow; 
-npm run dev
-"@ -PassThru -WindowStyle Normal
-
-Write-Host "  前端启动中... (端口 5173)" -ForegroundColor Green
-Write-Host ""
-
-# 等待启动
-Write-Host "等待服务启动..." -ForegroundColor Yellow
-Start-Sleep -Seconds 10
-
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Cyan
-Write-Host "  启动完成！" -ForegroundColor Green
+Write-Host "  访问地址：http://localhost:8080" -ForegroundColor Green
+Write-Host "  登录账号：admin / admin123" -ForegroundColor Green
 Write-Host "========================================" -ForegroundColor Cyan
-Write-Host ""
-Write-Host "访问地址:" -ForegroundColor White
-Write-Host "  前端：http://localhost:5173" -ForegroundColor Blue
-Write-Host "  后端：http://localhost:8080" -ForegroundColor Blue
 Write-Host ""
 Write-Host "按任意键退出此窗口..." -ForegroundColor Gray
 
